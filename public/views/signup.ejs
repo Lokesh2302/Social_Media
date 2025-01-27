@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Synarion Social Media</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Full page styling */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      background: linear-gradient(45deg, #f38328, #BA6C17, #f57c00, brown);
+      background-size: 400% 400%;
+      animation: gradientAnimation 10s ease infinite;
+    }
+
+    /* Animation for the gradient background */
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Styling for the signup form */
+    h2 {
+      color: #fff;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .error {
+      color: #4b2e3c; /* Darker text color for better contrast */
+      background-color: #f5e1a4; /* Soft, warm background color */
+     margin: 0; /* Removes any default margin around the paragraph */
+     padding: 5px; /* Adds padding around the text */
+     display: inline-block; /* Ensures the background only covers the text and not the entire width */
+     font-weight: bold; /* Makes the text bold */
+     border-radius: 5px; /* Rounded corners for a softer look */
+     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 7px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease-in-out; /* Smooth zoom effect */
+    }
+
+    .logo-img {
+      width: 60px;
+      height: auto;
+      margin-right: 20px;
+      transition: transform 0.3s ease-in-out; /* Smooth zoom effect */
+    }
+
+    .logo h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: #e9e7e3;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      transition: transform 0.3s ease-in-out; /* Smooth zoom effect */
+    }
+
+    .logo h1 .brand {
+      color: #f39c12;
+    }
+
+    .logo:hover,
+    .logo-img:hover,
+    .logo h1:hover {
+      transform: scale(1.1); /* Zoom in on hover */
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      margin: auto;
+      margin-top: 20px ;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #2a9d8f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #264653;
+    }
+
+    p {
+      margin-top: 15px;
+      color: #fff;
+    }
+
+    a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Header Section */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #191a1c;
+      color: white;
+      white-space: nowrap;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    nav ul li a:hover {
+      background-color: #f39c12;
+    }
+
+    /* Footer Section */
+    footer {
+      background-color: #191a1c;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 10px;
+    }
+
+    footer ul li {
+      display: inline;
+      margin: 0 15px;
+    }
+
+    footer ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    footer ul li a:hover {
+      color: #f39c12;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="logo">
+      <img src="../uploads/synarionlogo.jpeg" alt="Synarion Logo" class="logo-img">
+      <h1><b><span class="brand">S</span>ynar<span class="brand">i</span>on <span class="brand">S</span>oc<span class="brand">i</span>al <span class="brand">M</span>ed<span class="brand">i</span>a</b></h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/users-directory">Explore Users</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Sign Up Form Section -->
+  <div class="login-container">
+    <div class="login-form">
+      <h2>Sign Up</h2>
+
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
+
+      
+      <form action="/signup" method="POST" enctype="multipart/form-data">
+        <input type="text" name="email" placeholder="Email" required>
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="number" name="age" placeholder="Age" required>
+
+        <label for="profilePic" style="color: black;">Profile Picture:</label>
+        <input type="file" name="profilePic" accept="image/*">
+        <button type="submit">Sign Up</button>
+      </form>
+
+      <p>Already have an account? <a href="/login" class="link">Login</a></p>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2023 Synarion Social Media. All Rights Reserved.</p>
+    <ul>
+      <li><a href="/privacy-policy">Privacy Policy</a></li>
+      <li><a href="/terms-of-service">Terms of Service</a></li>
+    </ul>
+  </footer>
+
+</body>
+
+</html>

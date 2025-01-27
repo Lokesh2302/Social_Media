@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Synarion Social Media</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Basic Reset and Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ecf0f1;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Header Section Styling */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #191a1c;
+      color: white;
+    }
+
+    /* Logo Styling */
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-img {
+      width: 60px;
+      height: auto;
+      margin-right: 20px;
+    }
+
+    .logo h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: #f0ede8;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Zooming Effect on Heading */
+    .logo h1:hover {
+      transform: scale(1.1); /* Applies zoom effect */
+      transition: transform 0.3s ease-in-out; /* Smooth transition */
+    }
+
+    .logo h1 .brand {
+      color: #f39c12; /* Different color for branding letters */
+    }
+
+    /* Navigation Menu Styling */
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    nav ul li a:hover {
+      background-color: #f39c12; /* Change background color on hover */
+    }
+
+    /* Login Section Styling */
+    .login-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px 20px;
+    }
+
+    .login-form {
+      background-color: white;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .login-form h2 {
+      color: #3f51b5;
+      margin-bottom: 20px;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .login-form button {
+      background-color: #f39c12;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .login-form button:hover {
+      background-color: #e67e22;
+    }
+
+    .login-form .link {
+      color: #f39c12;
+      text-decoration: none;
+    }
+
+    .login-form .link:hover {
+      text-decoration: underline;
+    }
+
+    .login-form p {
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    /* Footer Section Styling */
+    footer {
+      background-color: #191a1c;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    footer ul {
+      list-style: none;
+      padding: 10px;
+    }
+
+    footer ul li {
+      display: inline;
+      margin: 0 15px;
+    }
+
+    footer ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    footer ul li a:hover {
+      color: #f39c12;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Section -->
+  <header>
+    <div class="logo">
+      <img src="../uploads/synarionlogo.jpeg" alt="Synarion Logo" class="logo-img">
+      <h1><b><span class="brand">S</span>ynar<span class="brand">i</span>on <span class="brand">S</span>oc<span class="brand">i</span>al <span class="brand">M</span>ed<span class="brand">i</span>a</b></h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/signup">Sign Up</a></li>
+        <li><a href="/users-directory">Explore Users</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Login Form Section -->
+  <div class="login-container">
+    <div class="login-form">
+      <h2>Login</h2>
+      
+      <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+      <% } %>
+      <% if (success) { %>
+        <p style="color: green;"><%= success %></p>
+      <% } %>
+    
+      <!-- Login Form -->
+      <form action="/login" method="POST">
+        <input type="text" name="loginIdentifier" placeholder="Username or Email" required value="<%= username %>">
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+
+      <p>Don't have an account? <a href="/signup" class="link">Sign up</a></p>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2023 Synarion Social Media. All Rights Reserved.</p>
+    <ul>
+      <li><a href="/privacy-policy">Privacy Policy</a></li>
+      <li><a href="/terms-of-service">Terms of Service</a></li>
+    </ul>
+  </footer>
+
+</body>
+
+</html>

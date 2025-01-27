@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages with <%= friend.username %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        header {
+            background-color: #3f51b5; /* Header color */
+            color:#FFC107;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+           
+        }
+        header h1 {
+       font-size: 2.2em;
+       margin: 0;
+       position: relative;
+        transition: transform 0.3s ease; /* Apply smooth transition for transform */
+     }
+
+      header h1:hover {
+        transform: scaleX(1.1) translateX(10%); /* Zoom in from right to left */
+        color: rgb(255, 255, 255);   
+    }  
+        header img {
+            border-radius: 50%;
+            margin-left: 10px;
+            width: 150px; /* Adjust the size here */
+           height: 150px; /* Ensure height is equal to width */
+            object-fit: cover; 
+            transition: transform 0.3s ease-in-out;
+        }
+        header img:hover{
+            transform : scale(1.2);
+        }
+
+
+        header ul{
+            display:flex;
+           
+        }
+      
+        header ul li{
+            list-style-type: none;
+            margin:0 11px 0 0;
+        }
+        header ul li:hover{
+           background-color: #FFC107 !important;
+        }
+        
+        .messages {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 400px; /* Fixed height for scrollable area */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        .sent, .received {
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sent {
+            background-color: #d1ecf1; /* Light blue for sent messages */
+            align-self: flex-end;
+        }
+        .sent :hover{
+            background-color: rgb(204, 204, 240);
+        }
+        .received {
+            background-color: #f8d7da; /* Light red for received messages */
+        }
+        .received :hover{
+            background-color: rgb(230, 166, 123);
+        }
+        .sent p, .received p {
+            margin: 0;
+        }
+
+        .sent strong, .received strong {
+            font-weight: bold;
+        }
+
+        form {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3f51b5; /* Button color */
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #f39c12; /* Darker shade on hover */
+             color:black;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #3f51b5; /* Footer color */
+            color: white;
+            padding: 10px;
+            margin-top: 30px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>           Messaging with <%= friend.username %></h1>
+        <img src="<%= friend.profilePic %>" alt="<%= friend.username %>'s profile picture" width="40">
+       <ul>
+        <li><a href="/myFriends" class="btn btn-light"><i class="fas fa-users"></i> My Friends</a></li>
+        <li><a href="/profile/<%= currentUser.id %>" class="btn btn-light"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/dashboard" class="btn btn-light"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="/logout" class="btn btn-light"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        
+    </ul>
+    </header>
+    <div class="messages">
+        <% if (messages.length === 0) { %>
+            <p>No messages yet. Start the conversation!</p>
+        <% } else { %>
+            <% messages.forEach(message => { %>
+                <div class="<%= message.sender_id === currentUser .id ? 'sent' : 'received' %>">
+                    <p>
+                        <strong>
+                            <%= message.sender_id === currentUser .id ? 'You' : friend.username %>:
+                        </strong>
+                        <%= message.message %>
+                    </p>
+                    <p>
+                        <small><%= new Date(message.createdAt).toLocaleString() %></small>
+                    </p>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+    <form action="/messages/<%= friend.id %>" method="POST">
+ <input type="text" name="message" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+    <footer>
+        <p>&copy; 2023 SynarionSocialMedia. All rights reserved.</p>
+    </footer>
+</body>
+</html>

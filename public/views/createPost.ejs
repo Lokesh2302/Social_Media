@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <!-- Bootstrap CSS Link -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-pzjw8f+ua7Kw1TIq0RYxXq9k5S+Gp/8r+z5Cm2ic0N7V7/WAvc6KlJd6v0mbHi7k" crossorigin="anonymous">
+    <!-- Font Awesome for Heart Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        /* Custom CSS styles */
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        header {
+            background-color: #3f51b5; /* Updated to #3f51b5 */
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        header h1 {
+            color: #f39c12; /* Updated to #f39c12 */
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+        }
+        header h1:hover{
+            color:rgb(233, 233, 233) ;
+
+        }
+        .nav-bar {
+            margin-top: 30px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .nav-bar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-bar ul li {
+            margin: 0 15px;
+        }
+
+        .nav-bar ul li a {
+            color: #141413;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: #f4fa9f;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-bar ul li a:hover {
+            background-color: #3f51b5;
+            color: #e0e0e0;
+        }
+
+        /* Container for Form and Preview */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px;
+            gap: 30px;
+        }
+
+        .left-panel,
+        .right-panel {
+            flex: 1;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            height: 100%; /* Make sure both panels have the same height */
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .right-panel img {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            height: 120px; /* Reduced height for better fitting */
+            font-size: 0.9em;
+        }
+
+        button {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        button:hover {
+            background-color: #5c6bc0;
+        }
+
+        #preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #3f51b5;
+            color: white;
+            margin-top: 40px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Create a New Post</h1>
+    </header>
+
+    <div class="nav-bar">
+        <ul>
+            <li><a href="/profile/<%= currentUser.id %>">Back to Profile</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- Left Panel (Form to Create Post) -->
+        <div class="left-panel">
+            <h3>Upload Your Post</h3>
+            <form id="postForm" action="/createPost" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="image">Upload Image:</label>
+                    <input type="file" name="image" id="image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="caption">Caption:</label>
+                    <textarea name="caption" id="caption" placeholder="Write something..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Create Post</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Panel (Preview Post) -->
+        <div class="right-panel" id="preview">
+            <h3>Preview Post</h3>
+            <img id="previewImage" src="" alt="Image Preview">
+            <p id="previewCaption"></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 SynarionSocialMedia. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const imageInput = document.getElementById('image');
+        const previewImage = document.getElementById('previewImage');
+        const previewCaption = document.getElementById('previewCaption');
+        const previewDiv = document.getElementById('preview');
+
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewDiv.style.display = 'block'; // Make preview visible
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        const captionInput = document.getElementById('caption');
+        captionInput.addEventListener('input', function () {
+            previewCaption.textContent = this.value; // Update preview caption
+        });
+    </script>
+
+</body>
+
+</html>

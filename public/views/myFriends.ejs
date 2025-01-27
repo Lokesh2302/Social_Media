@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends List</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Optional: External stylesheet -->
+  <style>
+    /* Global styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: auto; /* Ensure page can scroll normally */
+    }
+
+    /* Centering the "My Friends" text and applying styles */
+    h1 {
+      color: yellow;
+      font-size: 3em;
+      text-align: center;
+      padding: 10px;
+      background-color:#0E2174;
+      border-radius: 8px;
+      transition: background-color 0.3s, color 0.3s;
+      margin: 0;
+      width:30%;
+    }
+
+    h1:hover {
+      background-color: #ffef0e;
+      color: rgb(27, 0, 150);
+    }
+
+    /* Header style for profile picture and navigation */
+    header {
+      background-color: #3f51b5;
+      color: yellow;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 2.2em;
+      margin: 0;
+    }
+
+    header img {
+      border-radius: 50%;
+      margin-left: 10px;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    header img:hover {
+      transform: scale(1.2);
+    }
+
+    header ul {
+      display: flex;
+    }
+
+    header ul li {
+      list-style-type: none;
+      margin: 0 11px;
+    }
+
+    header ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: #3f51b5;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    header ul li a:hover {
+      background-color: #f39c12;
+      color: black;
+    }
+
+    .content {
+      margin: 20px;
+    }
+
+    .friends-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .user-item:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-img {
+      border-radius: 50%;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .actions {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-danger, .btn-success {
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .btn-danger {
+      background-color: red;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: darkred;
+    }
+
+    .btn-success {
+      background-color: green;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: darkgreen;
+    }
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Ensure scrolling is prevented in modal */
+}
+
+.modal-content {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Center the image in the modal */
+  align-items: center;
+  padding: 10px;
+  max-width: 80%; /* Allow image to scale within the modal */
+  max-height: 80vh; /* Limit image size relative to the viewport height */
+  overflow: hidden;
+}
+
+.modal img {
+  max-width: 100%; /* Make sure the image scales down appropriately */
+  max-height: 100%; /* Limit image height to avoid overflow */
+  object-fit: contain; /* Maintain aspect ratio */
+}
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 2em;
+      color: white;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="<%= currentUser.profilePic %>" alt="<%= currentUser.username %>'s profile picture" width="40">
+    <h1>My Friends</h1>
+    <ul>
+      <li><a href="/profile/<%= currentUser.id %>" class="btn btn-light"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="/dashboard" class="btn btn-light"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="/logout" class="btn btn-light"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+    </ul>
+  </header>
+
+  <div class="content">
+    <div class="friends-list">
+      <% if (friends.length > 0) { %>
+        <ul>
+          <% friends.forEach(friend => { %>
+            <li class="user-item">
+              <img src="<%= friend.profilePic %>" alt="<%= friend.username %>'s profile picture" width="50" height="50" class="user-img" onclick="openModal('<%= friend.profilePic %>')">
+ <!-- username clickable to go to the friend's profile -->
+ <a href="/profile/friend/<%= friend.id %>" style="text-decoration: none; color: #333;">
+  <p><%= friend.username %></p>
+</a>
+              <div class="actions">
+                <!-- Block User Form -->
+                <form action="/blockUser" method="POST">
+                  <input type="hidden" name="userIdToBlock" value="<%= friend.id %>">
+                  <button type="submit" class="btn-danger">Block</button>
+                </form>
+
+                <!-- Send Message Link -->
+                <a href="/messages/<%= friend.id %>">
+                  <button class="btn-success">Send Message</button>
+                </a>
+              </div>
+            </li>
+          <% }); %>
+        </ul>
+      <% } else { %>
+        <p>No friends found.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Modal for image -->
+  <div id="imageModal" class="modal" onclick="closeModal(event)">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal(event)">×</button>
+      <img id="modalImage" src="" alt="Friend's Profile Picture">
+    </div>
+  </div>
+
+  <script>
+  function openModal(imageSrc) {
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  modal.style.display = 'flex';
+  modalImage.src = imageSrc;
+  document.body.style.overflow = 'hidden'; /* Disable body scrolling when modal is open */
+}
+
+function closeModal(event) {
+  const modal = document.getElementById('imageModal');
+  if (event.target === modal || event.target.classList.contains('close-btn')) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; /* Re-enable body scrolling when modal is closed */
+  }
+}
+
+  </script>
+  
+</body>
+</html>

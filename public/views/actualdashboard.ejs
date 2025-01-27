@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-left: 20px;
+    }
+
+    header img {
+      border-radius: 50%;
+      margin-right: 20px;
+      width: 170px;
+      height: 170px;
+      transition: transform 0.3s ease-in-out; /* Smooth zoom effect */
+    }
+
+    header img:hover {
+      transform: scale(1.2); /* Enlarge the image on hover */
+    }
+
+    header nav ul {
+      list-style-type: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    header nav ul li {
+      display: inline-block;
+      margin: 0 10px;
+    }
+
+    header nav ul li a {
+      color: black;
+      font-size: 1.2em;
+      text-decoration: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      background-color: #f1e093;
+      transition: background-color 0.3s;
+    }
+
+    header nav ul li a:hover {
+      color: white;
+      background-color: #2D3672;
+    }
+
+    .collapsible {
+      background-color: #f1e093;
+      color: black;
+      cursor: pointer;
+      padding: 10px;
+      width: 100%;
+      text-align: left;
+      border: none;
+      outline: none;
+      font-size: 1.5em;
+    }
+
+    .active, .collapsible:hover {
+      background-color: #2D3672;
+      color: white;
+    }
+
+    .content {
+      padding: 0 18px;
+      display: none;
+      overflow: hidden;
+      background-color: #f0f0f0;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      transition: transform 0.3s ease-in-out , box-shadow 0.3s ease; /* Transition effect */
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-item:hover {
+      transform: scale(1.03); /* Smooth hover transition */
+    }
+.user-item p {
+  color:#1b3016;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: color 0.2s ease; /* Add smooth color change transition */
+}
+.user-item p:hover{
+  color: #e4761c;
+}
+    .user-item img {
+      margin-right: 15px;
+      transition: transform 0.3s ease-in-out; /* Smooth zoom effect */
+    }
+
+    .user-item img:hover {
+      transform: scale(1.1); /* Enlarge the image on hover */
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+    }
+
+    .btn-warning, .btn-success, .btn-danger {
+      padding: 5px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-warning {
+      background-color: #edcfee;
+    }
+ 
+    .btn-success {
+      background-color: #55f16a;
+    }
+
+    .btn-danger {
+      background-color:  #fad0c1;
+    }
+   
+    .btn-warning:hover {
+      background-color: #966c99;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #1a922e;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color:#BD1430; 
+      color: white;
+    }
+
+    .dashboard h2, .dashboard h3 {
+      margin-top: 20px;
+    }
+
+    /* Modal styles for image enlargement */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0); /* Black background */
+      background-color: rgba(0, 0, 0, 0.7); /* Black with transparency */
+    }
+
+
+   .modal-content {
+  position: relative;
+  margin: 5% auto;
+  max-width: 80%; /* Resize the image to fit in the modal */
+  max-height: 80%; /* Ensure the image doesn't take up too much vertical space */
+  display: block;
+  width: auto;
+  height: auto;
+  border: 2px solid #fff; /* Optional: Add a border around the image */
+  border-radius: 10px; /* Optional: Round the corners of the image */
+}
+
+.back{
+  padding: 10px 20px;
+   font-size: 1.2em;
+   color:white;
+  background-color: #6a7ada;
+
+}
+.back:hover{
+  color: yellow;
+  background-color: #21006d;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #f1f1f1;
+      font-size: 35px;
+      font-weight: bold;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Section -->
+  <header>
+    <div>
+      <h1>Welcome, <%= currentUser.username %>!</h1>
+      <p>Congratulations on completing <%= currentUser.age %> years on this circular planet.</p>
+    </div>
+    <img src="<%= currentUser.profilePic %>" alt="<%= currentUser.username %>'s profile picture" class="profile-img">
+    <nav>
+      <ul>
+        <li><a href="/profile/<%= currentUser.id %>">Home</a></li>
+        <li><a href="/updateprofile/<%= currentUser.id %>">Update Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dashboard Section -->
+  <div class="dashboard">
+    <!-- Collapsible Section: All Users -->
+    <button class="collapsible">All Users</button>
+    <div class="content">
+      <div class="users-list">
+        <% if (allUsers.length > 0) { %>
+          <ul>
+            <% allUsers.forEach(user => { %>
+              <li class="user-item">
+                <img src="<%= user.profilePic %>" alt="<%= user.username %>'s profile picture" width="50" height="50" class="user-img">
+                <p><%= user.username %></p>
+                <div class="actions">
+                  <% const isFriend = friends.some(friend => friend.friend && friend.friend.id === user.id); %>
+                  <% const hasSentRequest = sentRequestsList.some(request => request.receiver_id === user.id); %>
+                  <% const hasIncomingRequest = incomingRequestsList.some(request => request.sender_id === user.id); %>
+                  <% if (!isFriend && !hasSentRequest && !hasIncomingRequest) { %>
+                    <form action="/sendFriendRequest/<%= user.id %>" method="POST">
+                      <input type="hidden" name="receiverId" value="<%= user.id %>">
+                      <button type="submit" class="btn-warning">Send Friend Request</button>
+                    </form>
+                  <% } else if (hasSentRequest) { %>
+                    <form action="/undoFriendRequest" method="POST">
+                      <input type="hidden" name="receiverId" value="<%= user.id %>">
+                      <button type="submit" class="btn-danger">Undo Request</button>
+                    </form>
+                  <% } else { %>
+                    <span>Request Sent or Already Friends</span>
+                  <% } %>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p>No users available to add as friends.</p>
+        <% } %>
+      </div>
+    </div>
+
+  
+  <!--Collapsible Section:  Sent Requests Section -->
+  <button class="collapsible">Sent Requests</button>
+  <div class="content">
+    <% if (sentRequestsList.length > 0) { %>
+      <ul>
+        <% sentRequestsList.forEach(request => { %>
+          <li class="user-item">
+            <img src="<%= request.receiver.profilePic %>" alt="<%= request.receiver.username %>'s profile picture" width="50" height="50" class="user-img">
+            <p><%= request.receiver.username %></p>
+            <form action="/undoFriendRequest" method="POST">
+              <input type="hidden" name="receiverId" value="<%= request.receiver.id %>">
+              <button type="submit" class="btn-warning">Undo Request</button>
+            </form>
+          </li>
+        <% }); %>
+      </ul>
+    <% } else { %>
+      <p>No sent requests.</p>
+    <% } %>
+  </div>
+
+  <!-- Incoming Requests Section -->
+  <button class="collapsible">Incoming Requests</button>
+  <div class="content">
+    <% if (incomingRequestsList.length > 0) { %>
+      <ul>
+        <% incomingRequestsList.forEach(request => { %>
+          <li class="user-item">
+            <img src="<%= request.sender.profilePic %>" alt="<%= request.sender.username %>'s profile picture" width="50" height="50" class="user-img">
+            <p><%= request.sender.username %></p>
+            <div class="actions">
+              <form action="/acceptFriendRequest/<%= request.id %>" method="POST">
+                <button type="submit" class="btn-success">Accept</button>
+              </form>
+              <form action="/rejectFriendRequest/<%= request.id %>" method="POST">
+                <button type="submit" class="btn-warning">Reject</button>
+              </form>
+                 <!-- Block User Button -->
+            <form action="/blockUser" method="POST">
+              <input type="hidden" name="userIdToBlock" value="<%= request.sender.id %>">
+              <button type="submit" class="btn-danger">Block</button>
+            </form>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } else { %>
+      <p>No incoming requests.</p>
+    <% } %>
+  </div>
+</div>
+
+
+    <!-- Your Friends Section -->
+    <button class="collapsible">Your Friends</button>
+    <div class="content">
+      <div class="friends-list">
+        <% if (friends.length > 0) { %>
+          <ul>
+            <% friends.forEach(friend => { %>
+              <li class="user-item">
+                <img src="<%= friend.profilePic %>" alt="<%= friend.username %>'s profile picture" width="50" height="50" class="user-img">
+                <p><%= friend.username %></p>
+                <div class="actions">
+
+
+                  <a href="/messages/<%= friend.id %>">
+                    <button class="btn-success">Send Message</button>
+                  </a>
+    
+                  <form action="/blockUser" method="POST">
+                    <input type="hidden" name="userIdToBlock" value="<%= friend.id %>">
+                    <button type="submit" class="btn-danger">Block</button>
+                  </form>
+
+                  
+           
+
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p>You have no friends yet.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Blocked Users Section -->
+    <button class="collapsible">Blocked Users</button>
+    <div class="content">
+      <div class="blocked-users">
+        <% if (blockedUsers.length > 0) { %>
+          <ul>
+            <% blockedUsers.forEach(blockedUser => { %>
+              <li class="user-item">
+                <img src="<%= blockedUser.profilePic %>" alt="<%= blockedUser.username %>'s profile picture" width="50" height="50" class="user-img">
+                <p><%= blockedUser.username %></p>
+                <form action="/unblockUser" method="POST">
+                  <input type="hidden" name="blockedId" value="<%= blockedUser.id %>">
+                  <button type="submit" class="btn-warning">Unblock</button>
+                </form>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p>No blocked users.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Enlarged Image -->
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImg">
+  </div>
+
+
+
+  <!-- Centered Back Button -->
+<div style="text-align: center; margin-top: 20px;">
+  <a href="/profile/<%= currentUser.id %>">
+    <button class="back">Back</button>
+  </a>
+  </div>
+  <script>
+    // Function to toggle sections
+    const collapsibles = document.querySelectorAll('.collapsible');
+    collapsibles.forEach((collapsible) => {
+      collapsible.addEventListener('click', function () {
+        // Toggle the active class and display the content
+        this.classList.toggle('active');
+        const content = this.nextElementSibling;
+        if (content.style.display === 'block') {
+          content.style.display = 'none';
+        } else {
+          content.style.display = 'block';
+        }
+        saveState();  // Save the state after toggling
+      });
+    });
+
+    // Function to save the state of open sections to localStorage
+    function saveState() {
+      const openSections = [];
+      collapsibles.forEach((collapsible, index) => {
+        if (collapsible.classList.contains('active')) {
+          openSections.push(index);
+        }
+      });
+      localStorage.setItem('openSections', JSON.stringify(openSections)); // Save open sections
+    }
+
+    // Function to load the state of open sections from localStorage
+    function loadState() {
+      const openSections = JSON.parse(localStorage.getItem('openSections')) || [];
+      openSections.forEach((index) => {
+        const collapsible = collapsibles[index];
+        collapsible.classList.add('active');
+        collapsible.nextElementSibling.style.display = 'block'; // Open the section
+      });
+    }
+
+    // Load state when the page is loaded
+    window.onload = loadState;
+
+    // Modal functionality for enlarging images
+    const images = document.querySelectorAll('.user-img, .profile-img');
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImg");
+    const closeBtn = document.querySelector(".close");
+
+    images.forEach(image => {
+      image.addEventListener("click", function () {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+      });
+    });
+
+    closeBtn.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tody: <script>
+  $(document).ready(function () {
+    // Send friend request via AJAX
+    $('.send-request-form').submit(function (e) {
+      console.log('Send Request Ja rhi hai');
+      e.preventDefault();
+      const form = $(this);
+      $.ajax({
+        url: form.attr('action'),
+        method: 'POST',
+        data: form.serialize(),
+        success: function () {
+          const userItem = form.closest('.user-item');
+          userItem.remove(); // Move user from "All Users" to "Sent Requests"
+          $('#sent-requests-list .content ul').append(userItem);
+          // Update the action buttons to "Undo Request"
+          userItem.find('.actions').html('<form class="undo-request-form" action="/undoFriendRequest" method="POST"><input type="hidden" name="receiverId" value="' + form.find('input[name="receiverId"]').val() + '"><button type="submit" class="btn-danger">Undo Request</button></form>');
+        },
+        error: function () {
+          alert('Error sending friend request.');
+        }
+      });
+    });
+
+    // Undo friend request via AJAX
+    $(document).on('submit', '.undo-request-form', function (e) {
+      console.log('Undo request triggered');
+      e.preventDefault();
+      const form = $(this);
+      $.ajax({
+        url: form.attr('action'),
+        method: 'POST',
+        data: form.serialize(),
+        success: function () {
+          const requestItem = form.closest('.user-item');
+          requestItem.remove(); // Remove the item from Sent Requests
+          
+          
+          
+          // Append the user back to the All Users section
+          $('#all-users-list .content ul').append(`
+            <li class="user-item">
+              <img src="${requestItem.find('img').attr('src')}" alt="${requestItem.find('p').text()}'s profile picture" width="50" height="50" class="user-img">
+              <p>${requestItem.find('p').text()}</p>
+              <div class="actions">
+                <form class="send-request-form" action="/sendFriendRequest/${form.find('input[name="receiverId"]').val()}" method="POST">
+                  <input type="hidden" name="receiverId" value="${form.find('input[name="receiverId"]').val()}">
+                  <button type="submit" class="btn-warning">Send Friend Request</button>
+                </form>
+              </div>
+            </li>
+          `);
+        },
+        error: function () {
+          alert('Error undoing friend request.');
+        }
+      });
+    });
+
+
+
+
+    // Accept friend request via AJAX
+$(document).on('submit', '.accept-request-form', function (e) {
+  console.log('Accept Request triggered');
+  e.preventDefault();
+  const form = $(this);
+  $.ajax({
+    url: form.attr('action'),
+    method: 'POST',
+    data: form.serialize(),
+    success: function () {
+      const requestItem = form.closest('.user-item');
+      requestItem.remove(); // Remove the item from Incoming Requests
+
+      // Append the user to the Friends section
+      $('#friends-list ul').append(`
+        <li class="user-item">
+          <img src="${requestItem.find('img').attr('src')}" alt="${requestItem.find('p').text()}'s profile picture" width="50" height="50" class="user-img">
+          <p>${requestItem.find('p').text()}</p>
+          <div class="actions">
+            <a href="/messages/${form.find('input[name="receiverId"]').val()}">
+              <button class="btn-success">Send Message</button>
+            </a>
+            <form action="/blockUser" method="POST">
+              <input type="hidden" name="userIdToBlock" value="${form.find('input[name="receiverId"]').val()}">
+              <button type="submit" class="btn-danger">Block</button>
+            </form>
+          </div>
+        </li>
+      `);
+    },
+    error: function () {
+      alert('Error accepting friend request.');
+    }
+  });
+});
+
+    
+    // Reject friend request via AJAX
+    $(document).on('submit', '.reject-request-form', function (e) {
+      e.preventDefault();
+      const form = $(this);
+      $.ajax({
+        url: form.attr('action'),
+        method: 'POST',
+        success: function () {
+          const requestItem = form.closest('.user-item');
+          requestItem.remove(); // Remove the item from Incoming Requests
+          $('#all-users-list .content ul').append(requestItem); // Add back to All Users
+          requestItem.find('.actions').html('<form class="send-request-form" action="/sendFriendRequest/' + form.find('input[name="receiverId"]').val() + '" method="POST"><input type="hidden" name="receiverId" value="' + form.find('input[name="receiverId"]').val() + '"><button type="submit" class="btn-warning">Send Friend Request</button></form>');
+        },
+        error: function () {
+          alert('Error rejecting friend request.');
+        }
+      });
+    });
+
+   ///block 
+   // Block user via AJAX
+$(document).on('submit', '.block-user-form', function (e) {
+  console.log('Block User triggered');
+  e.preventDefault();
+  const form = $(this);
+  $.ajax({
+    url: form.attr('action'),
+    method: 'POST',
+    data: form.serialize(),
+    success: function () {
+      const userItem = form.closest('.user-item');
+      userItem.remove(); // Remove the item from Friends or Incoming Requests list
+
+      // Append the user to the Blocked Users section
+      $('#blocked-users-list .content ul').append(`
+        <li class="user-item">
+          <img src="${userItem.find('img').attr('src')}" alt="${userItem.find('p').text()}'s profile picture" width="50" height="50" class="user-img">
+          <p>${userItem.find('p').text()}</p>
+          <form class="unblock-user-form" action="/unblockUser" method="POST">
+            <input type="hidden" name="blockedId" value="${form.find('input[name="userIdToBlock"]').val()}">
+            <button type="submit" class="btn-warning">Unblock</button>
+          </form>
+        </li>
+      `);
+    },
+    error: function () {
+      alert('Error blocking user.');
+    }
+  });
+});
+////unblock
+// Unblock user via AJAX
+$(document).on('submit', '.unblock-user-form', function (e) {
+  console.log('Unblock User triggered');
+  e.preventDefault();
+  const form = $(this);
+  $.ajax({
+    url: form.attr('action'),
+    method: 'POST',
+    data: form.serialize(),
+    success: function () {
+      const blockedUserItem = form.closest('.user-item');
+      blockedUserItem.remove(); // Remove the item from Blocked Users
+
+      // Append the user back to the All Users section
+      $('#all-users-list .content ul').append(`
+        <li class="user-item">
+          <img src="${blockedUserItem.find('img').attr('src')}" alt="${blockedUserItem.find('p').text()}'s profile picture" width="50" height="50" class="user-img">
+          <p>${blockedUserItem.find('p').text()}</p>
+          <div class="actions">
+            <form class="send-request-form" action="/sendFriendRequest/${form.find('input[name="blockedId"]').val()}" method="POST">
+              <input type="hidden" name="receiverId" value="${form.find('input[name="blockedId"]').val()}">
+              <button type="submit" class="btn-warning">Send Friend Request</button>
+            </form>
+          </div>
+        </li>
+      `);
+    },
+    error: function () {
+      alert('Error unblocking user.');
+    }
+  });
+});
+
+  
+  });
+</script>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= currentUser.username %>'s Posts</title>
+  <!-- Bootstrap CSS Link -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-pzjw8f+ua7Kw1TIq0RYxXq9k5S+Gp/8r+z5Cm2ic0N7V7/WAvc6KlJd6v0mbHi7k" crossorigin="anonymous">
+  <style>
+    /* Custom CSS styles */
+    body {
+      background-color: #f4f7fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 11px 0;
+      text-align: center;
+    }
+    header:hover{
+            color:rgb(253, 228, 0) ;
+
+        }
+    header nav ul {
+      list-style-type: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    header nav ul li {
+      display: inline-block;
+      margin: 0 15px;
+    }
+
+    header nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      color: #26306b;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #efd8f0;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    header nav ul li a:hover{
+      background-color: #d7e1e2;
+      color: black;
+    }
+    .posts {
+      margin: 30px auto;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .post {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .post:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+    }
+
+    .post-header img {
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .post-meta {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .post-image {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .caption {
+      margin-top: 15px;
+    }
+
+    .comments {
+      margin-top: 20px;
+    }
+
+    .comments h4 {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .comments p {
+      margin-bottom: 5px;
+    }
+
+    .comments form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .comments form button {
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .comments form button:hover {
+      background-color: #2c387e;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #3f51b5;
+      color: white;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .posts {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .posts {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal img {
+      width: 50%;
+      height: auto;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <!-- <h1><%= currentUser.username %>'s Posts</h1> -->
+    <h1> My Posts</h1>
+    
+    <nav>
+      <ul>
+        <li><a href="/profile/<%= currentUser.id %>">Home</a></li>
+        <li><a href="/createPost" class="add-post">Add Post</a></li>
+        <li><a href="/dashboard">Go to Dashboard</a></li>
+        <li><a href="/updateprofile/<%= currentUser.id %>">Update Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+        
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Posts Section -->
+  <div class="posts">
+    <% posts.forEach(post => { %>
+      <div class="post">
+        <div class="post-header">
+          <img src="<%= post.user.profilePic %>" alt="<%= post.user.username %>'s profile picture" width="40">
+          <span><%= post.user.username %></span>
+          <div class="post-meta">
+            <span>Posted on: <%= moment(post.createdAt).format('MMMM Do YYYY, h:mm a') %></span>
+          </div>
+        </div>
+
+        <!-- Post Image Section -->
+        <% if (post.imageUrl) { %>
+          <img src="<%= post.imageUrl %>" alt="Post image" class="post-image" onclick="openImageModal('<%= post.imageUrl %>')">
+        <% } else { %>
+          <p>No image for this post.</p>
+        <% } %>
+
+        <!-- Post Caption Section -->
+        <div class="caption">
+          <p><%= post.caption %></p>
+          <form action="/editCaption/<%= post.id %>" method="GET">
+            <button type="submit" class="btn btn-primary btn-sm">Edit Caption</button>
+          </form>
+        </div>
+
+
+<!-- Delete Post Button -->
+
+  <form action="/deletePost/<%= post.id %>" method="POST" style="display: inline;">
+    <button type="submit" class="btn btn-danger">
+      <i class="fas fa-trash-alt"></i> Delete Post
+    </button>
+  </form>
+
+
+        <!-- Comments Section -->
+        <div class="comments">
+          <h4>Comments:</h4>
+          <div id="comments-<%= post.id %>">
+            <% post.comments.forEach(comment => { %>
+              <div class="comment" id="comment-<%= comment.id %>">
+                <p><strong><%= comment.user.username %>:</strong> <%= comment.content %></p>
+                <!-- Comment Deletion Button -->
+                <% if(comment.userId === currentUser.id || post.userId === currentUser.id) { %>
+                  <button class="btn btn-danger btn-sm delete-comment" data-comment-id="<%= comment.id %>" data-post-id="<%= post.id %>">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                <% } %>
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Add Comment Form -->
+          <form class="add-comment-form" data-post-id="<%= post.id %>">
+            <textarea name="content" placeholder="Add a comment" required></textarea>
+            <button type="submit" class="btn btn-primary btn-sm">Submit Comment</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+
+    <% if (posts.length === 0) { %>
+      <p>No posts available.</p>
+    <% } %>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <p>&copy; 2023 SynarionSocialMedia. All rights reserved.</p>
+  </footer>
+
+  <!-- Modal for Enlarged Image -->
+  <div id="imageModal" class="modal">
+    <span class="modal-close" onclick="closeImageModal()">×</span>
+    <img id="modalImage" src="" alt="Enlarged Post Image">
+  </div>
+
+  <!-- jQuery and Custom Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Function to open image modal
+    function openImageModal(imageUrl) {
+      var modal = document.getElementById('imageModal');
+      var modalImage = document.getElementById('modalImage');
+      modalImage.src = imageUrl;
+      modal.classList.add('active');
+    }
+
+    // Function to close image modal
+    function closeImageModal() {
+      var modal = document.getElementById('imageModal');
+      modal.classList.remove('active');
+    }
+
+    $(document).ready(function () {
+      // Handle comment addition via AJAX
+      $('.add-comment-form').on('submit', function (e) {
+        e.preventDefault();
+        const postId = $(this).data('post-id');
+        const content = $(this).find('textarea').val();
+
+        $.ajax({
+          type: 'POST',
+          url: `/comments/${postId}`,
+          data: { content },
+          success: function (response) {
+            const newComment = `
+              <div class="comment" id="comment-${response.commentId}">
+                <p><strong>${response.username}:</strong> ${response.content}</p>
+                ${response.isOwner || response.isPostOwner ? 
+                  `<button class="btn btn-danger btn-sm delete-comment" data-comment-id="${response.commentId}" data-post-id="${postId}">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>` : ''
+                }
+              </div>
+            `;
+            $(`#comments-${postId}`).append(newComment);
+            $('textarea').val(''); // Clear the textarea
+          },
+          error: function (err) {
+            console.error(err);
+          }
+        });
+      });
+
+      // Handle comment deletion via AJAX
+      $(document).on('click', '.delete-comment', function (e) {
+        e.preventDefault();
+        const commentId = $(this).data('comment-id');
+        const postId = $(this).data('post-id');
+
+        $.ajax({
+          type: 'DELETE',
+          url: `/comments/${commentId}`,
+          success: function (response) {
+            if (response.success) {
+              // Remove the comment element from the DOM
+              $(`#comment-${commentId}`).remove();
+            } else {
+              alert(response.error);
+            }
+          },
+          error: function (err) {
+            console.error(err);
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>

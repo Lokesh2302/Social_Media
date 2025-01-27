@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hi, <%= currentUser.username %>'s Profile</title>
+  <!-- Bootstrap CSS Link -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-pzjw8f+ua7Kw1TIq0RYxXq9k5S+Gp/8r+z5Cm2ic0N7V7/WAvc6KlJd6v0mbHi7k" crossorigin="anonymous">
+  <!-- Font Awesome for Heart Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <style>
+    /* Custom CSS styles */
+    body {
+      background-color: #f4f7fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    header {
+      background-color: #5c6bc0;
+      color: white;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-left: 30px;
+    }
+
+    header img {
+      width: 190px; /* Square shape */
+      height: 190px; /* Set height equal to width for square shape */
+      object-fit: cover;
+      margin-left: -29px;
+      border-radius: 0; /* Remove rounded corners to make it a square */
+      border: 2px solid #f39c12; /* Add yellow border */
+      transition: transform 0.3s ease-in-out;
+    }
+
+    header h1 {
+      position: absolute;
+      color: #eceae5;
+      font-size: 47px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 1;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    header h1:hover{
+            color:rgb(253, 228, 0) ;
+
+        }
+
+    .nav-bar {
+      margin-top: 30px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav-bar ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .nav-bar ul li {
+      margin: 0 15px;
+    }
+
+    .nav-bar ul li a {
+      color: #141413;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #f4fa9f;
+      border-radius: 5px;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .nav-bar ul li a:hover {
+      background-color: #3f51b5;
+      color: #e0e0e0;
+    }
+
+    .profile-content {
+      margin: 20px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .posts .post {
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+    }
+
+    .post-header img {
+      border-radius: 50%;
+      margin-right: 10px;
+      cursor: pointer; /* Make it clear that the image is clickable */
+    }
+
+    .post-header span {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .post-meta {
+      margin-top: 10px;
+      color: #757575;
+      font-size: 14px;
+    }
+
+    .like-section {
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+    }
+
+    .like-button {
+      background-color: #f39c12;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      color: white;
+    }
+
+    .like-button.liked {
+      color: rgb(240, 35, 35); /* Fixing the class name with correct syntax */
+    }
+
+    .comments {
+      margin-top: 15px;
+    }
+
+    .comments textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    .comments button {
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .comments button:hover {
+      background-color: #2c387e;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #5c6bc0;
+      color: white;
+      margin-top: 40px;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.9);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+    }
+
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .go-to-profile-bottom {
+    position: fixed;
+    bottom: 20px;  /* Position it 20px from the bottom of the page */
+    left: 50%;     /* Position it in the center horizontally */
+    transform: translateX(-50%);  /* Adjust the element to be exactly centered */
+    padding: 10px 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #53236e;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 999;  /* Make sure the button is on top of other elements */
+}
+    .go-to-profile-bottom:hover{
+      color: yellow;
+      background-color: #4F0747;
+      transition: color 0.3s ease, background-color 0.3s ease;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img id="profileImage" src="<%= currentUser.profilePic %>" alt="Profile picture" onclick="openModal(this.src)">
+    <h1> Welcome to <%= currentUser.username %>'s Profile !!</h1>
+  </header>
+
+  <div class="nav-bar">
+    <ul>
+      <li><a href="/dashboard" class="dashboard">Go to Dashboard</a></li>
+      <li><a href="/myFriends" class="add-post">My Friends</a></li>
+      <li><a href="/createPost" class="add-post">Add Post</a></li>
+      <li><a href="/profile/<%= currentUser.id %>/myPosts" class="my-posts">My Posts</a></li>
+      <li><a href="/updateprofile/<%= currentUser.id %>" class="update-profile">Update Profile</a></li>
+      <li><a href="/logout" class="logout">Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="container profile-content">
+    <h2>All Posts (Newest to Oldest)</h2>
+
+    <div class="posts">
+      <% posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); %>
+
+      <% posts.forEach(post => { %>
+        <div class="post">
+          <div class="post-header">
+            <img src="<%= post.user.profilePic %>" alt="<%= post.user.username %>'s profile picture" width="40" onclick="openModal(this.src)">
+            <% if (post.userId === currentUser .id) { %>
+              <span><a href="/profile/<%= currentUser .id %>/myPosts"><%= post.user.username %></a></span> <!-- Link to current user's posts -->
+            <% } else { %>
+              <span><a href="/profile/friend/<%= post.userId %>"><%= post.user.username %></a></span> <!-- Link to friend's profile -->
+            <% } %>
+          </div>
+
+
+          <% if (post.imageUrl) { %>
+            <img src="<%= post.imageUrl %>" alt="Post image" class="post-image img-fluid" width="400" onclick="openModal(this.src)">
+          <% } else { %>
+            <p>No image for this post.</p>
+          <% } %>
+
+          <% if (post.caption) { %>
+            <p class="caption">CAPTION: <%= post.caption %></p>
+          <% } %>
+
+          <div class="post-meta">
+            <span>Posted on: <%= moment(post.createdAt).format('MMMM Do YYYY, h:mm a') %></span>
+          </div>
+
+          <!-- Like Section -->
+          <div class="like-section">
+            <button class="like-button <%= post.likedByCurrentUser ? 'liked' : '' %>" data-post-id="<%= post.id %>">
+              <i class="fas fa-heart"></i>
+            </button>
+            <span><%= post.likeCount %> Likes</span>
+          </div>
+
+
+
+<!-- Delete Post Button -->
+<% if (post.userId === currentUser.id) { %>
+  <form action="/deletePost/<%= post.id %>" method="POST" style="display: inline;">
+    <button type="submit" class="btn btn-danger">
+      <i class="fas fa-trash-alt"></i> Delete Post
+    </button>
+  </form>
+<% } %>
+
+
+
+
+
+          <!-- Comments Section -->
+          <div class="comments">
+            <h4>Comments :</h4>
+            <div id="comments-<%= post.id %>">
+              <% post.comments.forEach(comment => { %>
+                <p><strong><%= comment.user.username %>:</strong> <%= comment.content %>
+                <% if (comment.userId === currentUser.id || post.userId === currentUser.id) { %>
+                  <button class="delete-comment-btn" data-comment-id="<%= comment.id %>">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                <% } %>
+                </p>
+              <% }) %>
+              
+            </div>
+
+            <form action="/comments/<%= post.id %>" method="POST" data-post-id="<%= post.id %>">
+              <textarea name="content" placeholder="Add a comment" required></textarea>
+              <button type="submit">Submit Comment</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+
+      <% if (posts.length === 0) { %>
+        <p>No posts available.</p>
+      <% } %>
+    </div>
+  </div>
+
+
+  <div>
+    <button class="go-to-profile-bottom">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+  </div>
+  
+
+  <footer>
+    <p>&copy; 2023 SynarionSocialMedia. All rights reserved.</p>
+  </footer>
+
+  <!-- Modal for Enlarged Image -->
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImg">
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Modal functionality for enlarging images
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImg");
+    const closeBtn = document.querySelector(".close");
+
+    // Function to open modal with the clicked image
+    function openModal(imageSrc) {
+      modal.style.display = "block";
+      modalImg.src = imageSrc;
+    }
+
+    // Close modal when close button is clicked
+    closeBtn.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside of the image
+    window.addEventListener("click", function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    $(document).ready(function() {
+      $(".like-button").on("click", function() {
+        const postId = $(this).data("post-id");
+        const button = $(this);
+
+        $.ajax({
+          url: `/likePost/${postId}`,
+          method: "POST",
+          success: function(response) {
+            if (response.liked) {
+              button.addClass("liked");
+            } else {
+              button.removeClass("liked");
+            }
+            button.siblings("span").text(response.likeCount + " Likes");
+          },
+          error: function(error) {
+            console.error("Error liking/unliking post:", error);
+          }
+        });
+      });
+
+      $(".comments form").on("submit", function(e) {
+        e.preventDefault();
+        const postId = $(this).data("post-id");
+        const content = $(this).find("textarea").val();
+
+        $.ajax({
+          url: `/comments/${postId}`,
+          method: "POST",
+          data: { content: content },
+          success: function(response) {
+            if (response.success) {
+              const newComment = 
+                `<p>
+                  <strong>${response.username}:</strong> ${response.content}
+                  ${response.isOwner || response.isPostOwner ? 
+                    `<button class="delete-comment-btn" data-comment-id="${response.commentId}"><i class="fas fa-trash-alt"></i></button>` : ''}
+                </p>`;
+              $("#comments-" + postId).append(newComment);
+              $("textarea[name='content']").val(""); 
+            }
+          },
+          error: function(error) {
+            console.error("Error adding comment:", error);
+          }
+        });
+      });
+
+      $(".posts").on("click", ".delete-comment-btn", function() {
+        const commentId = $(this).data("comment-id");
+        const button = $(this);
+
+        $.ajax({
+          url: `/comments/${commentId}`,
+          method: "DELETE",
+          success: function(response) {
+            if (response.success) {
+              button.closest("p").fadeOut(500, function() {
+                $(this).remove();
+              });
+            } else {
+              alert(response.error);
+            }
+          },
+          error: function(error) {
+            console.error("Error deleting comment:", error);
+          }
+        });
+      });
+    });
+  </script>
+  <script>
+ // Scroll to top when the button is clicked and refresh the page
+document.querySelector('.go-to-profile-bottom').addEventListener('click', function() {
+  // Scroll to top
+  window.scrollTo(0, 0);
+  
+  // Reload the page
+  location.reload();
+});
+
+  </script>
+</body>
+
+</html>

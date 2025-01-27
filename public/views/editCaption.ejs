@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Post Caption</title>
+  <style>
+    .edit-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .image-container img {
+      width: 100%; /* Ensure the image takes the full width */
+      max-width: 600px; /* Limit the image size */
+      height: auto;
+    }
+
+    .caption-container {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px; /* Make the textarea bigger */
+      font-size: 16px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Edit Post Caption</h1>
+
+  <form action="/updateCaption/<%= post.id %>" method="POST" >
+    <div class="edit-container">
+      <!-- Image Container -->
+      <div class="image-container">
+        <% if (post.imageUrl) { %>
+          <img src="<%= post.imageUrl %>" alt="Post Image">
+        <% } %>
+      </div>
+
+      <!-- Caption Edit Container -->
+      <div class="caption-container">
+        <label for="caption">Caption:</label>
+        <textarea name="caption" id="caption" required><%= post.caption %></textarea>
+      </div>
+
+      <button type="submit">Save</button>
+    </div>
+  </form>
+</body>
+</html>

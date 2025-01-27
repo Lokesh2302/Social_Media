@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header {
+            background-color: #3f51b5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        header:hover{
+            color:rgb(253, 228, 0) ;
+
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .content-container {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            
+        }
+
+        .left-container {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 108px;
+        }
+
+        .form-container,
+        .password-section {
+            width: 100%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .profile-container {
+            width: 45%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #e67e22;
+        }
+
+        h3 {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #3f51b5;
+            color: white;
+            margin-top: 40px;
+            width: 100%;
+        }
+
+        img {
+            border-radius: 8px;
+            margin-top: 10px;
+            max-width: 200px; /* Increased size for profile picture */
+        }
+
+        .password-field {
+            display: none;
+        }
+
+        .back {
+      padding: 10px 20px;
+      font-size: 1.2em;
+       color:white;
+        background-color: #354ccf;
+
+       }
+       .back:hover{
+        color: yellow;
+        background-color: #21006d;
+         transition: color 0.3s ease, background-color 0.3s ease;
+    }
+    </style>
+
+    <script>
+        // Client-side function to handle profile update form submission
+        function handleProfileUpdate(event) {
+            event.preventDefault(); // Prevent default form submission to avoid page reload
+
+            const formData = new FormData(event.target); // Create FormData object from the form
+
+            // Client-side fetch API to send form data to the server for updating the profile
+            fetch(event.target.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json()) // Handle server response, expecting a JSON object
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message); // Show success message if profile update is successful
+
+                        // Dynamically update displayed profile information on the page
+                        document.getElementById('displayedUsername').innerText = data.updatedUser.username;
+                        document.getElementById('displayedAge').innerText = data.updatedUser.age;
+
+                        // Update profile picture if a new one is uploaded by the user
+                        if (data.updatedUser.profilePic) {
+                            document.getElementById('profileImage').src = data.updatedUser.profilePic;
+                        }
+                    } else {
+                        alert(data.error); // Show error message if the update fails on the server-side
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while updating the profile.");
+                });
+        }
+
+        // Client-side function to show the current password field when the user clicks "Change Password"
+        function showCurrentPasswordField() {
+            document.getElementById('currentPasswordField').style.display = 'block'; // Show current password input
+
+            // Hide the "Change Password" button after the user clicks it
+            document.querySelector("button[onclick='showCurrentPasswordField()']").style.display = 'none';
+        }
+
+        // Client-side function to verify the current password entered by the user
+        function verifyCurrentPassword() {
+            const currentPassword = document.getElementById('currentPassword').value; // Get the current password input by user
+
+            // Client-side fetch API to send the current password to the server for verification
+            fetch('/verify-current-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword }) // Send the current password as JSON to the server
+                })
+                .then(response => response.json()) // Process the server's response, expecting JSON
+                .then(data => {
+                    if (data.success) {
+                        alert("Current password verified successfully.");
+                        document.getElementById('currentPasswordField').style.display = 'none'; // Hide current password field
+                        document.getElementById('newPasswordField').style.display = 'block'; // Show new password field
+                    } else {
+                        alert(data.error); // Show error message if password verification fails on the server-side
+                    }
+                });
+        }
+
+        // Client-side function to update the user's password after current password verification
+        function updatePassword() {
+            const newPassword = document.getElementById('password').value; // Get the new password entered by the user
+
+            // Client-side fetch API to send the new password to the server for updating the password
+            fetch('/updatepassword', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: newPassword }) // Send the new password as JSON to the server
+                })
+                .then(response => {
+                    console.log('Response:', response); // Log the response for debugging
+                    return response.json(); // Attempt to parse the response as JSON
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("Password updated successfully.");
+                        // Redirect to login page after successful password update
+                        window.location.href = `/login?success=${encodeURIComponent(data.message)}&username=${encodeURIComponent(data.email)}`;
+                    } else {
+                        alert(data.error); // Show error message if password update fails on the server-side
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log any error that occurred during the fetch process
+                    alert("An error occurred while updating the password.");
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>Update Profile</h1>
+    </header>
+
+    <div class="content-container">
+        <!-- Left Container (form and password section) -->
+        <div class="left-container">
+            <div class="form-container">
+                <form action="/updateprofile/<%= currentUser.id %>" method="POST" enctype="multipart/form-data" onsubmit="handleProfileUpdate(event)">
+                    <div>
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username" value="<%= currentUser.username %>" required>
+                    </div>
+                    <div>
+                        <label for="age">Age:</label>
+                        <input type="number" name="age" id="age" value="<%= currentUser.age %>" required>
+                    </div>
+
+                    <div>
+                        <label for="profilePic">Profile Picture:</label>
+                        <input type="file" name="profilePic" id="profilePic">
+                    </div>
+
+                    <div>
+                        <button type="submit">Update</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Password Change Section -->
+            <div class="password-section">
+                <h3>Change Password</h3>
+                <button type="button" onclick="showCurrentPasswordField()">Change Password</button>
+
+                <div id="currentPasswordField" class="password-field">
+                    <label for="currentPassword">Current Password:</label>
+                    <input type="password" name="currentPassword" id="currentPassword" required>
+                    <button type="button" onclick="verifyCurrentPassword()">Verify</button>
+                </div>
+
+                <div id="newPasswordField" class="password-field">
+                    <label for="password">New Password:</label>
+                    <input type="password" name="password" id="password" required>
+                    <button type="button" onclick="updatePassword()">Update Password</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Display Section (on the right side) -->
+        <div class="profile-container">
+            <h3>Your Updated Profile</h3>
+            <p>Username: <span id="displayedUsername"><%= currentUser.username %></span></p>
+            <p>Age: <span id="displayedAge"><%= currentUser.age %></span></p>
+            <% if (currentUser.profilePic) { %>
+                <img id="profileImage" src="<%= currentUser.profilePic %>" alt="Profile Picture">
+            <% } else { %>
+                <p>No profile picture.</p>
+            <% } %>
+        </div>
+    </div>
+      <!-- Centered Back Button -->
+<div style="text-align: center; margin-top: 20px;">
+    <a href="/profile/<%= currentUser.id %>">
+      <button class="back">Back</button>
+    </a>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 SynarionSocialMedia. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
